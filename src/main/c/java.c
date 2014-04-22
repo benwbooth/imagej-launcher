@@ -88,6 +88,8 @@ int is_java_home(const char *directory)
 {
 	struct string *jre = string_initf("%s/jre", directory);
 	int result = is_jre_home(jre->buffer);
+	if (debug)
+		error("Is %sa Java home: %s", result ? "" : "not ", jre);
 	string_release(jre);
 	return result;
 }
@@ -154,6 +156,9 @@ const char *get_jre_home(void)
 			jre = string_initf("%s", result);
 			if (debug)
 				error("JRE found in '%s'", jre->buffer);
+#ifdef __APPLE__
+			setenv("JAVA_HOME", jre->buffer, 1);
+#endif
 			return jre->buffer;
 		}
 		string_release(libjvm);
